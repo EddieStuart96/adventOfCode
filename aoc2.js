@@ -2,33 +2,51 @@ const fs = require("fs");
 
 fs.readFile("Input2.txt", (err, data) => {
   if (err) throw err;
+  let impossible = [];
+  let possible = [];
   const inputs = data.toString().split("\n");
+
   inputs.forEach((game, index) => {
-    // console.log(game.split(":").slice(1));
-    // const minusGame = game.split(":").slice(1);
+    possible.push(index + 1);
     const turns = game.split(":").slice(1);
+
     [...turns].forEach((turn) => {
-      //   console.log("turn", turn);
       const gameTurn = turn.split(";");
-      //   console.log(gameTurn);
 
       gameTurn.forEach((colourCube) => {
-        // console.log(colourCube.replace(/[^0-9]/g, ";"));
         const cubeDraw = colourCube.split(",");
-        console.log(index, cubeDraw);
         cubeDraw.forEach((draw) => {
-          //   console.log("draw", draw);
+          let red = 12,
+            green = 13,
+            blue = 14;
           if (draw.includes("red")) {
-            console.log("red", draw.replace(/[^0-9]/g, ""));
+            if (
+              red < parseInt(draw.replace(/[^0-9]/g, "")) &&
+              !impossible.includes(index + 1)
+            ) {
+              impossible.push(index + 1);
+            }
           } else if (draw.includes("green")) {
-            console.log("green", draw.replace(/[^0-9]/g, ""));
+            if (
+              green < parseInt(draw.replace(/[^0-9]/g, "")) &&
+              !impossible.includes(index + 1)
+            ) {
+              impossible.push(index + 1);
+            }
           } else if (draw.includes("blue")) {
-            console.log("blue", draw.replace(/[^0-9]/g, ""));
+            if (
+              blue < parseInt(draw.replace(/[^0-9]/g, "")) &&
+              !impossible.includes(index + 1)
+            ) {
+              impossible.push(index + 1);
+            }
           }
         });
       });
     });
   });
+  console.log(
+    "sum of possible games",
+    possible.filter((el) => !impossible.includes(el)).reduce((a, b) => a + b)
+  );
 });
-
-// 12 red, 13 green, 14 blue
