@@ -1,52 +1,36 @@
 const fs = require("fs");
 
+const minCubesPossible = (minColour, draw) => {
+  if (parseInt(draw.replace(/[^0-9]/g, "")) > minColour) {
+    minColour = parseInt(draw.replace(/[^0-9]/g, ""));
+  }
+  return minColour;
+};
+
 fs.readFile("Input2.txt", (err, data) => {
   if (err) throw err;
-  let impossible = [];
-  let possible = [];
+  let sum = 0;
   const inputs = data.toString().split("\n");
 
-  inputs.forEach((game, index) => {
-    possible.push(index + 1);
-    const turns = game.split(":").slice(1);
+  inputs.forEach((game) => {
+    let minRed = 0,
+      minGreen = 0,
+      minBlue = 0;
 
-    [...turns].forEach((turn) => {
-      const gameTurn = turn.split(";");
-
-      gameTurn.forEach((colourCube) => {
-        const cubeDraw = colourCube.split(",");
-        cubeDraw.forEach((draw) => {
-          let red = 12,
-            green = 13,
-            blue = 14;
+    [...game.split(":").slice(1)].forEach((turn) => {
+      turn.split(";").forEach((colourCube) => {
+        colourCube.split(",").forEach((draw) => {
           if (draw.includes("red")) {
-            if (
-              red < parseInt(draw.replace(/[^0-9]/g, "")) &&
-              !impossible.includes(index + 1)
-            ) {
-              impossible.push(index + 1);
-            }
+            minRed = minCubesPossible(minRed, draw);
           } else if (draw.includes("green")) {
-            if (
-              green < parseInt(draw.replace(/[^0-9]/g, "")) &&
-              !impossible.includes(index + 1)
-            ) {
-              impossible.push(index + 1);
-            }
+            minGreen = minCubesPossible(minGreen, draw);
           } else if (draw.includes("blue")) {
-            if (
-              blue < parseInt(draw.replace(/[^0-9]/g, "")) &&
-              !impossible.includes(index + 1)
-            ) {
-              impossible.push(index + 1);
-            }
+            minBlue = minCubesPossible(minBlue, draw);
           }
         });
       });
     });
+    sum += minRed * minBlue * minGreen;
   });
-  console.log(
-    "sum of possible games",
-    possible.filter((el) => !impossible.includes(el)).reduce((a, b) => a + b)
-  );
+  console.log("power of minCubes", sum);
 });
