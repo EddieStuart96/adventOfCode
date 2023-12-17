@@ -1,11 +1,14 @@
 const fs = require("fs");
 
-const checkAdjacent = (specialCharNumbers, lineIndex, num) => {
+const checkAdjacent = (specialCharNumbers, lineIndex, num, inputs) => {
   if (specialCharNumbers[lineIndex].includes(num)) {
+    console.log(inputs[lineIndex][num]);
     return true;
   }
 
   if (lineIndex > 0 && specialCharNumbers[lineIndex - 1].includes(num)) {
+    console.log(inputs[lineIndex - 1][num]);
+
     return true;
   }
 
@@ -13,6 +16,8 @@ const checkAdjacent = (specialCharNumbers, lineIndex, num) => {
     lineIndex < specialCharNumbers.length - 1 &&
     specialCharNumbers[lineIndex + 1].includes(num)
   ) {
+    console.log(inputs[lineIndex + 1][num]);
+
     return true;
   }
   return false;
@@ -61,13 +66,28 @@ fs.readFile("Input3.txt", (err, data) => {
         trailingDigits = [];
         isPartNumber = false;
       }
-      let hasAdjacent = checkAdjacent(specialCharNumbers, lineIndex, num);
+      let hasAdjacent = checkAdjacent(
+        specialCharNumbers,
+        lineIndex,
+        num,
+        inputs
+      );
 
       if (!hasAdjacent)
-        hasAdjacent = checkAdjacent(specialCharNumbers, lineIndex, num + 1);
+        hasAdjacent = checkAdjacent(
+          specialCharNumbers,
+          lineIndex,
+          num + 1,
+          inputs
+        );
 
       if (!hasAdjacent)
-        hasAdjacent = checkAdjacent(specialCharNumbers, lineIndex, num - 1);
+        hasAdjacent = checkAdjacent(
+          specialCharNumbers,
+          lineIndex,
+          num - 1,
+          inputs
+        );
 
       if (hasAdjacent && !isPartNumber) isPartNumber = true;
     });
