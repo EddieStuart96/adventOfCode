@@ -1,26 +1,37 @@
 const fs = require("fs");
 
-const checkAdjacent = (specialCharNumbers, lineIndex, num, inputs) => {
+let gearRatio = [];
+
+const checkAdjacent = (
+  specialCharNumbers,
+  lineIndex,
+  num,
+  inputs,
+  trailingDigits
+) => {
   if (specialCharNumbers[lineIndex].includes(num)) {
-    console.log(inputs[lineIndex][num]);
-    return true;
+    // console.log(inputs[lineIndex][num], trailingDigits);
+    gearRatio.push([lineIndex, num]);
+    return lineIndex;
   }
 
   if (lineIndex > 0 && specialCharNumbers[lineIndex - 1].includes(num)) {
-    console.log(inputs[lineIndex - 1][num]);
+    // console.log(inputs[lineIndex - 1][num], trailingDigits);
+    gearRatio.push([lineIndex - 1, num]);
 
-    return true;
+    return lineIndex - 1;
   }
 
   if (
     lineIndex < specialCharNumbers.length - 1 &&
     specialCharNumbers[lineIndex + 1].includes(num)
   ) {
-    console.log(inputs[lineIndex + 1][num]);
+    // console.log(inputs[lineIndex + 1][num], trailingDigits);
+    gearRatio.push([lineIndex + 1, num]);
 
-    return true;
+    return lineIndex + 1;
   }
-  return false;
+  return 0;
 };
 
 fs.readFile("Input3.txt", (err, data) => {
@@ -31,6 +42,8 @@ fs.readFile("Input3.txt", (err, data) => {
   let specialCharNumbers = [];
   let trailingDigits = [];
   let finalPartNumbers = [];
+  let symbolFoundCount = [];
+
   const inputs = data.toString().split(/\r?\n/);
 
   inputs.forEach((inputLine, index) => {
@@ -50,6 +63,7 @@ fs.readFile("Input3.txt", (err, data) => {
 
   engineNumbers.forEach((nums, lineIndex) => {
     let isPartNumber = false;
+    let symbolFound = [];
 
     nums.forEach((num) => {
       if (isNaN(parseInt(num)) && isPartNumber) {
@@ -63,6 +77,18 @@ fs.readFile("Input3.txt", (err, data) => {
       if (!isNaN(parseInt(num))) {
         trailingDigits.push(num);
       } else if (isNaN(parseInt(num))) {
+        isPartNumber && console.log(trailingDigits, symbolFound);
+        if (isPartNumber) {
+          symbolFoundCount.push(symbolFound);
+          console.log(
+            "occur",
+            symbolFoundCount.reduce(
+              (counter, currentNumber) =>
+                symbolFound === currentNumber ? counter + 1 : counter,
+              0
+            )
+          );
+        }
         trailingDigits = [];
         isPartNumber = false;
       }
@@ -70,27 +96,38 @@ fs.readFile("Input3.txt", (err, data) => {
         specialCharNumbers,
         lineIndex,
         num,
-        inputs
+        inputs,
+        trailingDigits
       );
+      if (hasAdjacent) symbolFound = [hasAdjacent, num];
 
-      if (!hasAdjacent)
+      if (!hasAdjacent) {
         hasAdjacent = checkAdjacent(
           specialCharNumbers,
           lineIndex,
           num + 1,
-          inputs
+          inputs,
+          trailingDigits
         );
+        if (hasAdjacent) symbolFound = [hasAdjacent, num + 1];
+      }
 
-      if (!hasAdjacent)
+      if (!hasAdjacent) {
         hasAdjacent = checkAdjacent(
           specialCharNumbers,
           lineIndex,
           num - 1,
-          inputs
+          inputs,
+          trailingDigits
         );
+        if (hasAdjacent) symbolFound = [hasAdjacent, num - 1];
+      }
 
-      if (hasAdjacent && !isPartNumber) isPartNumber = true;
+      if (hasAdjacent && !isPartNumber) {
+        isPartNumber = true;
+      }
     });
   });
+  console.log(finalPartNumbers, symbolFoundCount);
   console.log(finalPartNumbers.reduce((a, b) => a + b, 0));
 });
