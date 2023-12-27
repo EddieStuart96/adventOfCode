@@ -80,14 +80,6 @@ fs.readFile("Input3.txt", (err, data) => {
         isPartNumber && console.log(trailingDigits, symbolFound);
         if (isPartNumber) {
           symbolFoundCount.push(symbolFound);
-          console.log(
-            "occur",
-            symbolFoundCount.reduce(
-              (counter, currentNumber) =>
-                symbolFound === currentNumber ? counter + 1 : counter,
-              0
-            )
-          );
         }
         trailingDigits = [];
         isPartNumber = false;
